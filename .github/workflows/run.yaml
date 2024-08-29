@@ -1,0 +1,44 @@
+name: Daily CURL Request
+
+on:
+  schedule:
+    # Runs at 0:55 AM AEST (UTC+10:00) every day.
+    - cron: '55 14 * * *'
+
+jobs:
+  curl_request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get the start and end of day in AEST
+        id: dates
+        run: |
+          # Set timezone to UTC+10 for AEST
+          TZ=Australia/Brisbane
+          # Start of the day (AEST)
+          dateFrom=$(date -d '00:00 today' +%s)000
+          # End of the day (AEST)
+          dateTo=$(date -d '23:59 today' +%s)000
+          
+          echo "::set-output name=dateFrom::$dateFrom"
+          echo "::set-output name=dateTo::$dateTo"
+
+      - name: Run CURL command
+        run: |
+          curl "https://api.prod.aws.queensland.com/search?category=events&countryCode=au_en&dateFrom=${{ steps.dates.outputs.dateFrom }}&dateTo=${{ steps.dates.outputs.dateTo }}&destination=all-queensland&disabledClassificationsFilter=true&rawCategory=event" > events.json
+
+      - name: Commit events file
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git fetch --unshallow || true
+          git add events.json
+          if git diff --cached --exit-code; then
+            echo 'No changes in events.json, skipping commit.'
+          else
+            git commit -m "Daily update of events.json"
+            git push
+          fi
