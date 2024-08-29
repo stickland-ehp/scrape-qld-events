@@ -18,19 +18,23 @@ jobs:
         id: dates
         run: |
           # Set timezone to UTC+10 for AEST
-          TZ=Australia/Brisbane
-          # Start of the day (AEST)
-          dateFrom=$(date -d '00:00 today' +%s)000
-          # End of the day (AEST)
-          dateTo=$(date -d '23:59 today' +%s)000
+          export TZ='Australia/Brisbane'
+          # Start of the day (AEST) at 00:00
+          dateFrom=$(date -u -d "today" +"%Y-%m-%dT00:00:00Z")
+          # End of the day (AEST) at 23:59
+          dateTo=$(date -u -d "today" +"%Y-%m-%dT23:59:59Z")
           
-          echo "::set-output name=dateFrom::$dateFrom"
-          echo "::set-output name=dateTo::$dateTo"
+          # Convert dates to EPOCH milliseconds
+          dateFromEpoch=$(date -u -d "$dateFrom" +%s%3N)
+          dateToEpoch=$(date -u -d "$dateTo" +%s%3N)
+          
+          echo "dateFrom=${dateFromEpoch}" >> $GITHUB_ENV
+          echo "dateTo=${dateToEpoch}" >> $GITHUB_ENV
 
       - name: Run CURL command
         run: |
-          curl "https://api.prod.aws.queensland.com/search?category=events&countryCode=au_en&dateFrom=${{ steps.dates.outputs.dateFrom }}&dateTo=${{ steps.dates.outputs.dateTo }}&destination=all-queensland&disabledClassificationsFilter=true&rawCategory=event" > events.json
-
+          curl "https://api.prod.aws.queensland.com/search?category=events&countryCode=au_en&dateFrom=${{ env.dateFrom }}&dateTo=${{ env.dateTo }}&destination=all-queensland&disabledClassificationsFilter=true&rawCategory=event" > events.json
+      
       - name: Commit events file
         run: |
           git config --global user.email "action@github.com"
