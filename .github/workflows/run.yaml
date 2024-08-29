@@ -1,6 +1,7 @@
 name: Daily CURL Request
 
 on:
+  workflow_dispatch:
   schedule:
     # Runs at 0:55 AM AEST (UTC+10:00) every day.
     - cron: '55 14 * * *'
