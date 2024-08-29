@@ -33,7 +33,9 @@ jobs:
           
       - name: CURL request to Queensland Events API with dynamic dates
         run: |
-          curl -X GET "https://api.prod.aws.queensland.com/search?category=events&countryCode=au_en&dateFrom=${{ steps.date-calculation.outputs.date_from_ms }}&dateTo=${{ steps.date-calculation.outputs.date_to_ms }}&destination=all-queensland&disabledClassificationsFilter=true&rawCategory=event"
+          curl -X GET \
+          -H "Content-Type: application/json" \
+          "https://api.prod.aws.queensland.com/search?category=events&countryCode=au_en&dateFrom=${{ steps.date-calculation.outputs.date_from_ms }}&dateTo=${{ steps.date-calculation.outputs.date_to_ms }}&destination=all-queensland&disabledClassificationsFilter=true&rawCategory=event"
 
       - name: Commit events file
         run: |
