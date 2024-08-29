@@ -33,9 +33,8 @@ jobs:
           
       - name: CURL request to Queensland Events API 
         run: |
-          curl -X GET \
-          -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,image/svg+xml,*/*;q=0.8" \
-          -H "Accept-Encoding: gzip, deflate, br" \
+          curl --compressed -X GET \
+          -H "Accept: application/json" \
           "https://api.prod.aws.queensland.com/search?category=events&countryCode=au_en&dateFrom=${{ env.DATE_FROM_MS }}&dateTo=${{ env.DATE_TO_MS }}&destination=all-queensland&disabledClassificationsFilter=true&rawCategory=event"
 
       - name: Commit events file
