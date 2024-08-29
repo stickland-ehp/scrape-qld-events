@@ -27,15 +27,15 @@ jobs:
           # Multiply by 1000 to convert seconds to milliseconds
           DATE_TO_MS=$((DATE_TO * 1000))
           
-          # Set the values as action's output parameters
-          echo "::set-output name=date_from_ms::$DATE_FROM_MS"
-          echo "::set-output name=date_to_ms::$DATE_TO_MS"
+          # Write to the GITHUB_ENV
+          echo "DATE_FROM_MS=$DATE_FROM_MS" >> $GITHUB_ENV
+          echo "DATE_TO_MS=$DATE_TO_MS" >> $GITHUB_ENV
           
-      - name: CURL request to Queensland Events API with dynamic dates
+      - name: CURL request to Queensland Events API 
         run: |
           curl -X GET \
-          -H "Content-Type: application/json" \
-          "https://api.prod.aws.queensland.com/search?category=events&countryCode=au_en&dateFrom=${{ steps.date-calculation.outputs.date_from_ms }}&dateTo=${{ steps.date-calculation.outputs.date_to_ms }}&destination=all-queensland&disabledClassificationsFilter=true&rawCategory=event"
+          -H "Accept: application/json" \
+          "https://api.prod.aws.queensland.com/search?category=events&countryCode=au_en&dateFrom=${{ env.DATE_FROM_MS }}&dateTo=${{ env.DATE_TO_MS }}&destination=all-queensland&disabledClassificationsFilter=true&rawCategory=event"
 
       - name: Commit events file
         run: |
