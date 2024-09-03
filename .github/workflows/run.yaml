@@ -43,17 +43,9 @@ jobs:
           git config --global user.name "GitHub Action"
           git fetch --unshallow || true
           git add events.json
-      
-          # Calculate count of events
-          EVENTS_COUNT=$(jq '.hits.total.value' events.json)
-          
-          # Generate summary list of events
-          EVENTS_SUMMARY=$(jq -r '.hits.hits[] | ._source.productName' events.json | sed 's/^/- /')
-          
-          # Get the current date in YYYY-MM-DD format
-          CURRENT_DATE=$(date -u +'%Y-%m-%d')
-          
-          count=$(jq '.hits.hits | length' events.json)
-          git commit -m "$(EVENTS_COUNT) for $(CURRENT_DATE)" -m "$(EVENTS_SUMMARY)" || exit 0
+          count=$(jq '.hits.total.value' events.json)
+          summary=$(jq -r '.hits.hits[] | ._source.productName' events.json | sed 's/^/- /')
+          dt=$(date -u +'%Y-%m-%d')
+          git commit -m "$(count) for $(dt)" -m "$(summary)" || exit 0
           git push
 
