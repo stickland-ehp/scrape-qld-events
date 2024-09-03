@@ -46,6 +46,6 @@ jobs:
           count=$(jq '.hits.total.value' events.json)
           summary=$(jq -r '.hits.hits[] | ._source.productName' events.json | sed 's/^/- /')
           dt=$(date -u +'%Y-%m-%d')
-          git commit -m "${count} for ${dt}" -m "${summary}" || exit 0
+          git commit -m "${dt} : ${count} events" -m "${summary}" || exit 0
           git push
 
