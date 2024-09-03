@@ -48,10 +48,7 @@ jobs:
           EVENTS_COUNT=$(jq '.hits.total.value' events.json)
           
           # Generate summary list of events
-          EVENTS_SUMMARY=$(jq -r '.hits.hits[].source.productName' events.json | tr '\n' ', ')
-          
-          # Trim trailing comma
-          EVENTS_SUMMARY=$(echo "$EVENTS_SUMMARY" | sed 's/,*$//')
+          EVENTS_SUMMARY=$(jq -r '.hits.hits[] | ._source.productName' events.json | sed 's/^/- /')
           
           # Get the current date in YYYY-MM-DD format
           CURRENT_DATE=$(date -u +'%Y-%m-%d')
