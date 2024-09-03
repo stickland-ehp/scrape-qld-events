@@ -53,10 +53,7 @@ jobs:
           # Get the current date in YYYY-MM-DD format
           CURRENT_DATE=$(date -u +'%Y-%m-%d')
           
-          if git diff --cached --exit-code; then
-            echo 'No changes in events.json, skipping commit.'
-          else
-            count=$(jq '.hits.hits | length' events.json)
-            git commit -m "$(EVENTS_COUNT) for $(CURRENT_DATE)" -m "$(EVENTS_SUMMARY)" || exit 0
-            git push
-          fi
+          count=$(jq '.hits.hits | length' events.json)
+          git commit -m "$(EVENTS_COUNT) for $(CURRENT_DATE)" -m "$(EVENTS_SUMMARY)" || exit 0
+          git push
+
