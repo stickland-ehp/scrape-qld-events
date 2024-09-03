@@ -57,6 +57,6 @@ jobs:
             echo 'No changes in events.json, skipping commit.'
           else
             count=$(jq '.hits.hits | length' events.json)
-            git commit -m "Update for $CURRENT_DATE - $EVENTS_COUNT events: $EVENTS_SUMMARY"
+            git commit -m "$(EVENTS_COUNT) for $(CURRENT_DATE)" -m "$(EVENTS_SUMMARY)" || exit 0
             git push
           fi
